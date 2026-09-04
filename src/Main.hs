@@ -91,13 +91,8 @@ updateModel = \case
       stepMove seat (botMove supply m seat)
 
   NextHand -> do
-    pacer += 1 -- cancels any scheduled auto-advance
     m <- get
     when (m ^. phase == HandOver) goNextHand
-
-  NextHandAuto stamp -> do
-    m <- get
-    when (m ^. pacer == stamp && m ^. phase == HandOver) goNextHand
 
   SetRaise n -> do
     m <- get
@@ -187,6 +182,7 @@ afterStep = do
             threadDelay (700000 + floor (jitter * 1000000))
             pure (BotMove stamp j (drop 1 supply))
       Nothing -> pure ()
+    -- the banner waits for NEXT HAND (or enter/space); no auto-advance
     HandOver -> do
       let heroWon = sum [ awAmount a | a <- m ^. awards, awSeat a == heroSeat ]
           heroShowed = _pRevealed (seatAt m heroSeat)
@@ -195,9 +191,6 @@ afterStep = do
         | heroWon > 0 -> "win"
         | heroShowed -> "lose"
         | otherwise -> "chips"
-      io $ do
-        threadDelay 4600000
-        pure (NextHandAuto stamp)
     _ -> pure ()
 -----------------------------------------------------------------------------
 -- | A friendly opening slider position: a pot-sized raise, clamped.

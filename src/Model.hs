@@ -95,7 +95,6 @@ data Action
   | HeroMove Move
   | BotMove Int Int [Double] -- ^ pacer stamp, seat, decision randomness
   | NextHand                -- ^ the button in the banner
-  | NextHandAuto Int        -- ^ scheduled advance, pacer-stamped
   | SetRaise Int
   | ToggleRaise
   | Keys IntSet
