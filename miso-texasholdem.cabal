@@ -1,0 +1,59 @@
+cabal-version:          3.0
+name:                   miso-texasholdem
+version:                0.1.0.0
+synopsis:               No-limit Texas hold 'em built with miso
+homepage:               https://texasholdem.haskell-miso.org
+license:                BSD-3-Clause
+author:                 dmjio
+maintainer:             code@dmj.io
+category:               Game
+build-type:             Simple
+
+executable app
+  if arch(wasm32)
+    cpp-options:
+      -DWASM
+    ghc-options:
+      -no-hs-main -optl-mexec-model=reactor "-optl-Wl,--export=hs_start"
+
+  hs-source-dirs:       src
+  main-is:              Main.hs
+  other-modules:        Bots
+                        Cards
+                        Eval
+                        Model
+                        Poker
+                        Sound
+                        Styles
+  build-depends:        base, containers, miso, mtl
+  ghc-options:          -Wall
+  default-language:     GHC2021
+  default-extensions:   CPP
+                        LambdaCase
+                        MultiWayIf
+                        OverloadedStrings
+                        QuasiQuotes
+                        RecordWildCards
+                        TupleSections
+                        ViewPatterns
+
+test-suite spec
+  if arch(wasm32)
+    buildable:          False
+  type:                 exitcode-stdio-1.0
+  main-is:              Spec.hs
+  hs-source-dirs:       tests, src
+  other-modules:        Bots
+                        Cards
+                        Eval
+                        Model
+                        Poker
+  build-depends:        base, containers, miso
+  ghc-options:          -Wall
+  default-language:     GHC2021
+  default-extensions:   LambdaCase
+                        MultiWayIf
+                        OverloadedStrings
+                        RecordWildCards
+                        TupleSections
+                        ViewPatterns

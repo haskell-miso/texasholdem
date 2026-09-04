@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
+
+    <title>Texas Hold 'Em — Free Online Poker · Miso Casino</title>
+    <meta name="description" content="Play no-limit Texas hold 'em free in your browser. A six-max table against five AI rivals with distinct styles — rising blinds, side pots, all-in showdowns, and a proper min-raise rule. No ads, no signup, works on mobile.">
+    <link rel="canonical" href="https://texasholdem.haskell-miso.org/">
+    <meta name="theme-color" content="#0E1114">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>♠️</text></svg>">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Miso Casino">
+    <meta property="og:title" content="Texas Hold 'Em — Free Online Poker">
+    <meta property="og:description" content="No-limit hold 'em against five AI rivals. Rising blinds, side pots, all-in showdowns. Free, no ads, works on mobile.">
+    <meta property="og:url" content="https://texasholdem.haskell-miso.org/">
+    <meta property="og:image" content="https://texasholdem.haskell-miso.org/social.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="The Miso Casino hold 'em table">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Texas Hold 'Em — Free Online Poker">
+    <meta name="twitter:description" content="No-limit hold 'em against five AI rivals. Rising blinds, side pots, all-in showdowns. Free, no ads, works on mobile.">
+    <meta name="twitter:image" content="https://texasholdem.haskell-miso.org/social.jpg">
+
+    <!-- Performance -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Outfit:wght@400;600;700;800&display=swap">
+    <link rel="modulepreload" href="index.js">
+    <link rel="modulepreload" href="ghc_wasm_jsffi.js">
+    <link rel="preload" href="app.wasm" as="fetch" crossorigin="anonymous">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoGame",
+      "name": "Miso Casino Texas Hold 'Em",
+      "url": "https://texasholdem.haskell-miso.org/",
+      "image": "https://texasholdem.haskell-miso.org/social.jpg",
+      "description": "Free online no-limit Texas hold 'em. Six-max table against five AI players with distinct styles, rising blinds, side pots, and all-in showdowns.",
+      "genre": ["Card game", "Casino game"],
+      "playMode": "SinglePlayer",
+      "gamePlatform": "Web browser",
+      "applicationCategory": "Game",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript and WebAssembly",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock"
+      },
+      "author": { "@type": "Person", "name": "David M. Johnson" }
+    }
+    </script>
+
+    <style>
+      html, body { margin: 0; padding: 0; background: #0E1114; }
+      #loading {
+        position: fixed; inset: 0; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; text-align: center;
+        gap: 10px; padding: 24px; color: #949EAA;
+        font-family: 'Outfit', 'Avenir Next', 'Segoe UI', system-ui, sans-serif;
+        background:
+          radial-gradient(90% 70% at 50% 12%, rgba(232,199,125,.075), rgba(0,0,0,0) 60%),
+          linear-gradient(180deg, #14181D 0%, #0E1114 55%, #0A0C0F 100%);
+      }
+      #loading h1 {
+        margin: 0; font-size: clamp(26px, 6vmin, 46px);
+        letter-spacing: .08em; font-weight: 700;
+        font-family: 'Fraunces', Georgia, serif;
+        background: linear-gradient(180deg, #F7E3AE 20%, #E8C77D 55%, #B98F44 100%);
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+        padding-bottom: 6px;
+      }
+      #loading .suits { color: #C9A45C; letter-spacing: .8em; text-indent: .8em; font-size: 14px; }
+      #loading p { max-width: 560px; line-height: 1.6; margin: 4px 0; font-size: 15px; }
+      #loading .dim { color: #5A646F; font-size: 13px; }
+      #loading .pulse { animation: lpulse 1.2s ease-in-out infinite; }
+      @keyframes lpulse { 0%, 100% { opacity: .45 } 50% { opacity: 1 } }
+    </style>
+  </head>
+
+  <body>
+    <div id="loading">
+      <div class="suits">♠ ♥ ♦ ♣</div>
+      <h1>TEXAS HOLD 'EM</h1>
+      <p>No-limit Texas hold 'em at a six-max table. Five AI rivals with
+        five different styles, blinds that rise every eight hands, real
+        side pots, and all-in showdowns where the winning cards light up.</p>
+      <p>Fold, check, call, or drag the slider and raise. Outlast the
+        table to take every chip. Free in your browser — no ads, no
+        signup, mobile friendly.</p>
+      <p class="dim pulse">shuffling up and dealing…</p>
+      <noscript><p><strong>Miso Casino requires JavaScript and
+        WebAssembly.</strong> Enable JavaScript to play.</p></noscript>
+    </div>
+
+    <script src="index.js" type="module"></script>
+
+  </body>
+</html>
