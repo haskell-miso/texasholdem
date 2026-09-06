@@ -570,7 +570,18 @@ skin = sheet_
       , "text-transform" =: "uppercase"
       , CSS.color mist
       ]
-  , selector_ ".btn.next" [ CSS.marginTop "4px", CSS.padding "10px 24px" ]
+  , selector_ ".bbtns"
+      [ CSS.display "flex"
+      , CSS.gap "8px"
+      , CSS.flexWrap "wrap"
+      , CSS.justifyContent "center"
+      , CSS.alignItems "center"
+      , CSS.marginTop "4px"
+      ]
+  , selector_ ".btn.next" [ CSS.padding "10px 24px" ]
+  , selector_ ".btn.peek" [ CSS.padding "10px 16px", CSS.fontSize "13px" ]
+  -- a peeked muck stays greyed, but readable
+  , selector_ ".peeking .seat.folded" [ CSS.opacity 0.75, CSS.filter "saturate(.7)" ]
   -- overlays -----------------------------------------------------------------
   , selector_ ".overlay"
       [ CSS.position "fixed"
@@ -748,7 +759,8 @@ skin = sheet_
       , rule_ ".seat.s0" [ CSS.left "50%", CSS.top "98%" ]
       , rule_ ".seat.s1" [ CSS.left "16%", CSS.top "70%" ]
       , rule_ ".seat.s2" [ CSS.left "15%", CSS.top "29%" ]
-      , rule_ ".seat.s3" [ CSS.left "50%", CSS.top "4%" ]
+      -- low enough that a revealed hand above the plate stays on screen
+      , rule_ ".seat.s3" [ CSS.left "50%", CSS.top "9%" ]
       , rule_ ".seat.s4" [ CSS.left "85%", CSS.top "29%" ]
       , rule_ ".seat.s5" [ CSS.left "84%", CSS.top "70%" ]
       , rule_ ".betSpot.bs0" [ CSS.left "50%", CSS.top "80%" ]
@@ -808,7 +820,9 @@ skin = sheet_
           [ CSS.flexDirection "row", CSS.alignItems "baseline", CSS.gap "8px" ]
       , rule_ ".bwho" [ CSS.fontSize "15px" ]
       , rule_ ".bhand" [ CSS.fontSize "10px" ]
-      , rule_ ".btn.next" [ CSS.padding "7px 16px", CSS.marginTop "0" ]
+      , rule_ ".bbtns" [ CSS.marginTop "0" ]
+      , rule_ ".btn.next" [ CSS.padding "7px 16px" ]
+      , rule_ ".btn.peek" [ CSS.padding "7px 12px", CSS.fontSize "11px" ]
       ]
   -- reduced motion -----------------------------------------------------------------
   , media_ (MediaQuery "(prefers-reduced-motion: reduce)")

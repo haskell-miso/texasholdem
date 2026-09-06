@@ -72,6 +72,7 @@ updateModel = \case
     m <- get
     when (m ^. phase == Playing || m ^. phase == HandOver) $ do
       put (dealHand supply m)
+      showHands .= False
       playFx "deal"
       animSeq += 1
       afterStep
@@ -93,6 +94,13 @@ updateModel = \case
   NextHand -> do
     m <- get
     when (m ^. phase == HandOver) goNextHand
+
+  ShowHands -> do
+    m <- get
+    when (m ^. phase == HandOver && not (m ^. showHands)) $ do
+      showHands .= True
+      animSeq += 1
+      playFx "flip"
 
   SetRaise n -> do
     m <- get
@@ -123,7 +131,9 @@ issueKey m k
   | GameOver _ <- m ^. phase =
       when (k == 13 || k == 32) (issue StartGame)
   | HandOver <- m ^. phase =
-      when (k == 13 || k == 32) (issue NextHand)
+      if | k == 13 || k == 32 -> issue NextHand
+         | k == 83 -> issue ShowHands                        -- S
+         | otherwise -> pure ()
   | heroTurn =
       if | k == 70 -> issue (HeroMove MFold)                 -- F
          | k == 67 || k == 32 -> issue (HeroMove MCheckCall) -- C, space
@@ -317,7 +327,8 @@ streetName = \case
   Preflop -> "PRE-FLOP"; Flop -> "FLOP"; Turn -> "TURN"; River -> "RIVER"
 -----------------------------------------------------------------------------
 tableView :: Model -> View () Model Action
-tableView m = H.div_ [ HP.class_ "tableWrap" ] $
+tableView m = H.div_
+  [ HP.class_ (joinCls [ "tableWrap", clsWhen (m ^. showHands) "peeking" ]) ] $
   [ H.div_ [ HP.class_ "felt" ]
       [ H.div_ [ HP.class_ "feltRing" ] []
       , H.div_ [ HP.class_ "feltLogo" ] [ text "MISO CASINO" ]
@@ -453,8 +464,9 @@ seatView m j = H.div_
 -----------------------------------------------------------------------------
 holeViews :: Model -> Int -> [View () Model Action]
 holeViews m j
-  | null (_pHole p) || _pOut p || _pFolded p && not isHero = []
-  | isHero || _pRevealed p =
+  | null (_pHole p) || _pOut p = []
+  | _pFolded p && not isHero && not peeking = []
+  | isHero || _pRevealed p || peeking =
       [ cardFace
           (joinCls
             [ clsWhen (card `elem` lits) "lit"
@@ -468,6 +480,7 @@ holeViews m j
   where
     p = seatAt m j
     isHero = j == heroSeat
+    peeking = m ^. showHands && m ^. phase == HandOver
     lits = litCards m
     dulls = not (null lits)
 -----------------------------------------------------------------------------
@@ -547,8 +560,16 @@ bannerView m = H.div_ [ HP.class_ "banner", key_ ("b" <> ms (m ^. handNo)) ]
         | a <- m ^. awards
         ]
         ++
-        [ H.button_ [ HP.class_ "btn gold next", HE.onClick NextHand ]
-            [ text "NEXT HAND", H.span_ [ HP.class_ "kb" ] [ text "↵" ] ]
+        [ H.div_ [ HP.class_ "bbtns" ]
+            ( [ H.button_ [ HP.class_ "btn ghost peek", HE.onClick ShowHands ]
+                  [ text "SHOW HANDS", H.span_ [ HP.class_ "kb" ] [ text "S" ] ]
+              | mucked m
+              ]
+              ++
+              [ H.button_ [ HP.class_ "btn gold next", HE.onClick NextHand ]
+                  [ text "NEXT HAND", H.span_ [ HP.class_ "kb" ] [ text "↵" ] ]
+              ]
+            )
         ]
       )
   ]
@@ -556,6 +577,14 @@ bannerView m = H.div_ [ HP.class_ "banner", key_ ("b" <> ms (m ^. handNo)) ]
     winnerLabel a
       | awSeat a == heroSeat = "YOU WIN"
       | otherwise = awName a <> " WINS"
+-----------------------------------------------------------------------------
+-- | Is anyone still holding cards the hero has not seen? Drives the
+-- banner's SHOW HANDS button, which is pointless once nothing is hidden.
+mucked :: Model -> Bool
+mucked m = not (m ^. showHands) && or
+  [ not (null (_pHole p)) && not (_pOut p) && (_pFolded p || not (_pRevealed p))
+  | (j, p) <- zip [0 ..] (m ^. players), j /= heroSeat
+  ]
 -----------------------------------------------------------------------------
 gameOverView :: Model -> Bool -> View () Model Action
 gameOverView m won = H.div_ [ HP.class_ "overlay" ]
@@ -610,7 +639,8 @@ helpOverlay = H.div_ [ HP.class_ "overlay help" ]
       , para $
           "Last player standing takes the pot uncontested. Otherwise "
           <> "hands go face up and the best five-card hand wins — the "
-          <> "winning cards light up so you can see why."
+          <> "winning cards light up so you can see why. SHOW HANDS on the "
+          <> "winner's banner turns over whatever stayed hidden."
       , sec "HAND RANKS, LOW TO HIGH"
       , para $
           "high card · pair · two pair · trips · straight · flush · "
@@ -623,7 +653,8 @@ helpOverlay = H.div_ [ HP.class_ "overlay help" ]
       , sec "KEYS"
       , para $
           "F fold · C or space check/call · R raise (arrows size it, "
-          <> "enter confirms) · A all-in · H help"
+          <> "enter confirms) · A all-in · S show hands when one is over · "
+          <> "H help"
       , H.button_ [ HP.class_ "btn gold", HE.onClick CloseHelp ]
           [ text "GOT IT" ]
       ]

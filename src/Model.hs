@@ -82,6 +82,7 @@ data Model = Model
   , _animSeq :: Int           -- ^ remount key for pop animations
   , _biggestPot :: Int        -- ^ hero stat for the game-over screen
   , _soundOn :: Bool
+  , _showHands :: Bool        -- ^ the banner's peek at the mucked hands
   , _showHelp :: Bool
   , _heldKeys :: IntSet
   } deriving (Eq, Show)
@@ -95,6 +96,7 @@ data Action
   | HeroMove Move
   | BotMove Int Int [Double] -- ^ pacer stamp, seat, decision randomness
   | NextHand                -- ^ the button in the banner
+  | ShowHands               -- ^ turn the mucked hands face up
   | SetRaise Int
   | ToggleRaise
   | Keys IntSet
@@ -177,6 +179,7 @@ initialModel = Model
   , _animSeq = 0
   , _biggestPot = 0
   , _soundOn = True
+  , _showHands = False
   , _showHelp = False
   , _heldKeys = IS.empty
   }
