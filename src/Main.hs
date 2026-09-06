@@ -236,7 +236,6 @@ viewModel _ _ m = case m ^. phase of
       , H.div_ [ HP.class_ "room" ] [ tableView m ]
       ]
       ++ [ actionBar m | heroTurn ]
-      ++ [ bannerView m | m ^. phase == HandOver ]
       ++ [ gameOverView m won | GameOver won <- [ m ^. phase ] ]
       ++ [ helpOverlay | m ^. showHelp ]
     )
@@ -328,6 +327,7 @@ tableView m = H.div_ [ HP.class_ "tableWrap" ] $
   ]
   ++ [ betSpot m j | j <- [0 .. seats - 1] ]
   ++ [ seatView m j | j <- [0 .. seats - 1] ]
+  ++ [ bannerView m | m ^. phase == HandOver ]
 -----------------------------------------------------------------------------
 potView :: Model -> View () Model Action
 potView m

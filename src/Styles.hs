@@ -531,11 +531,13 @@ skin = sheet_
       , "font-variant-numeric" =: "tabular-nums"
       ]
   -- winner banner ---------------------------------------------------------------
-  -- sits below the board so the winning cards stay in view
+  -- anchored to the table, in the gap between the board and the hero's cards,
+  -- so every card on the felt (and in the seats) stays readable
   , selector_ ".banner"
-      [ CSS.position "fixed"
-      , CSS.left "50%", CSS.top "63%"
+      [ CSS.position "absolute"
+      , CSS.left "50%", CSS.top "66%"
       , CSS.transform "translate(-50%,-50%)"
+      , CSS.maxWidth "62%"
       , CSS.zIndex 70
       ]
   , selector_ ".bpanel"
@@ -551,7 +553,7 @@ skin = sheet_
       , CSS.flexDirection "column"
       , CSS.gap "10px"
       , CSS.alignItems "center"
-      , CSS.maxWidth "92vw"
+      , CSS.maxWidth "100%"
       ]
   , selector_ ".bline" [ CSS.display "flex", CSS.flexDirection "column", CSS.gap "3px" ]
   , selector_ ".bwho"
@@ -772,7 +774,8 @@ skin = sheet_
       , rule_ ".abar" [ CSS.width "calc(100vw - 12px)" ]
       , rule_ ".abtns .btn" [ CSS.padding "14px 6px", CSS.fontSize "13px" ]
       , rule_ ".bubble" [ CSS.fontSize "9px" ]
-      , rule_ ".banner" [ CSS.top "42%" ]
+      -- keep clear of the side seats' plates and cards on either flank
+      , rule_ ".banner" [ CSS.top "69%", CSS.maxWidth "52%" ]
       , rule_ ".bpanel" [ CSS.padding "14px 18px" ]
       ]
   -- responsive: short landscape ---------------------------------------------------
@@ -786,6 +789,26 @@ skin = sheet_
           [ CSS.width "min(480px, 92vw)" ]
       , rule_ ".abtns .btn" [ CSS.padding "9px 6px", CSS.fontSize "12px" ]
       , rule_ ".tray" [ CSS.padding "8px" ]
+      -- no room between board and hero here: park a slim bar under the table
+      , rule_ ".banner"
+          [ CSS.position "fixed"
+          , CSS.left "50%", CSS.top "auto", CSS.bottom "6px"
+          , CSS.transform "translateX(-50%)"
+          , CSS.maxWidth "96vw"
+          ]
+      , rule_ ".bpanel"
+          [ CSS.flexDirection "row"
+          , CSS.flexWrap "wrap"
+          , CSS.justifyContent "center"
+          , CSS.alignItems "center"
+          , CSS.padding "7px 14px"
+          , CSS.gap "6px 16px"
+          ]
+      , rule_ ".bline"
+          [ CSS.flexDirection "row", CSS.alignItems "baseline", CSS.gap "8px" ]
+      , rule_ ".bwho" [ CSS.fontSize "15px" ]
+      , rule_ ".bhand" [ CSS.fontSize "10px" ]
+      , rule_ ".btn.next" [ CSS.padding "7px 16px", CSS.marginTop "0" ]
       ]
   -- reduced motion -----------------------------------------------------------------
   , media_ (MediaQuery "(prefers-reduced-motion: reduce)")
