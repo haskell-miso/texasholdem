@@ -237,8 +237,8 @@ playFx name = do
 -----------------------------------------------------------------------------
 -- * View
 -----------------------------------------------------------------------------
-viewModel :: () -> () -> Model -> View () Model Action
-viewModel _ _ m = case m ^. phase of
+viewModel :: Model -> View () () Model Action
+viewModel m = case m ^. phase of
   Title -> H.div_ []
     ( titleView : [ helpOverlay | m ^. showHelp ] )
   _ -> H.div_ []
@@ -266,7 +266,7 @@ fmtChips n
     chunk [] = []
     chunk s = take 3 s : chunk (drop 3 s)
 -----------------------------------------------------------------------------
-titleView :: View () Model Action
+titleView :: View () () Model Action
 titleView = H.div_ [ HP.class_ "titleWrap" ] $
   [ deco f red x y r dl
   | (f, red, x, y, r, dl) <-
@@ -297,7 +297,7 @@ titleView = H.div_ [ HP.class_ "titleWrap" ] $
           [ CSS.left x, CSS.top y, "--fr" =: r, CSS.animationDelay dl ]
       ] [ text f ]
 -----------------------------------------------------------------------------
-topbar :: Model -> View () Model Action
+topbar :: Model -> View () () Model Action
 topbar m = H.div_ [ HP.class_ "topbar" ]
   [ H.div_ [ HP.class_ "brand" ] [ text "♠ TEXAS HOLD 'EM" ]
   , H.div_ [ HP.class_ "hudStats" ]
@@ -326,7 +326,7 @@ streetName :: Street -> MisoString
 streetName = \case
   Preflop -> "PRE-FLOP"; Flop -> "FLOP"; Turn -> "TURN"; River -> "RIVER"
 -----------------------------------------------------------------------------
-tableView :: Model -> View () Model Action
+tableView :: Model -> View () () Model Action
 tableView m = H.div_
   [ HP.class_ (joinCls [ "tableWrap", clsWhen (m ^. showHands) "peeking" ]) ] $
   [ H.div_ [ HP.class_ "felt" ]
@@ -340,7 +340,7 @@ tableView m = H.div_
   ++ [ seatView m j | j <- [0 .. seats - 1] ]
   ++ [ bannerView m | m ^. phase == HandOver ]
 -----------------------------------------------------------------------------
-potView :: Model -> View () Model Action
+potView :: Model -> View () () Model Action
 potView m
   | total == 0 = H.div_ [ HP.class_ "pot dimmed" ] []
   | otherwise = H.div_ [ HP.class_ "pot", key_ (ms total) ]
@@ -351,7 +351,7 @@ potView m
     -- _pTotal already contains this street's bets
     total = potSize m
 -----------------------------------------------------------------------------
-boardView :: Model -> View () Model Action
+boardView :: Model -> View () () Model Action
 boardView m = H.div_ [ HP.class_ "boardRow" ]
   [ slot k | k <- [0 .. 4] ]
   where
@@ -373,7 +373,7 @@ litCards m
       nub (concat [ hvCards hv | Award _ _ _ (Just hv) <- m ^. awards ])
   | otherwise = []
 -----------------------------------------------------------------------------
-cardFace :: MisoString -> Maybe MisoString -> Card -> View () Model Action
+cardFace :: MisoString -> Maybe MisoString -> Card -> View () () Model Action
 cardFace cls mdelay card = H.div_
   ( HP.class_ (joinCls [ "card", cls, clsWhen (suitRed (suit card)) "red" ])
   : [ CSS.style_ [ CSS.animationDelay (d <> "00ms") ] | Just d <- [mdelay] ]
@@ -383,11 +383,11 @@ cardFace cls mdelay card = H.div_
   , H.span_ [ HP.class_ "cmark" ] [ text (suitFace (suit card)) ]
   ]
 -----------------------------------------------------------------------------
-cardBack :: View () Model Action
+cardBack :: View () () Model Action
 cardBack = H.div_ [ HP.class_ "card back" ]
   [ H.span_ [ HP.class_ "backPip" ] [ text "🍜" ] ]
 -----------------------------------------------------------------------------
-betSpot :: Model -> Int -> View () Model Action
+betSpot :: Model -> Int -> View () () Model Action
 betSpot m j
   | amt == 0 = H.div_ [] []
   | otherwise = H.div_
@@ -399,7 +399,7 @@ betSpot m j
     amt = _pBet (seatAt m j)
 -----------------------------------------------------------------------------
 -- | A little stack of chips for an amount (denomination-colored).
-chipStack :: Int -> View () Model Action
+chipStack :: Int -> View () () Model Action
 chipStack amt = H.div_ [ HP.class_ "chips" ]
   [ H.div_
       [ HP.class_ ("chip " <> denomCls d)
@@ -417,7 +417,7 @@ chipStack amt = H.div_ [ HP.class_ "chips" ]
     denomCls = \case
       1000 -> "c1000"; 500 -> "c500"; 100 -> "c100"; 25 -> "c25"; _ -> "c5"
 -----------------------------------------------------------------------------
-seatView :: Model -> Int -> View () Model Action
+seatView :: Model -> Int -> View () () Model Action
 seatView m j = H.div_
   [ HP.class_ (joinCls
       [ "seat", "s" <> ms j
@@ -462,7 +462,7 @@ seatView m j = H.div_
       | _pAllIn p && m ^. phase == Playing = "ALL-IN"
       | otherwise = fmtChips (_pStack p)
 -----------------------------------------------------------------------------
-holeViews :: Model -> Int -> [View () Model Action]
+holeViews :: Model -> Int -> [View () () Model Action]
 holeViews m j
   | null (_pHole p) || _pOut p = []
   | _pFolded p && not isHero && not peeking = []
@@ -484,7 +484,7 @@ holeViews m j
     lits = litCards m
     dulls = not (null lits)
 -----------------------------------------------------------------------------
-actionBar :: Model -> View () Model Action
+actionBar :: Model -> View () () Model Action
 actionBar m = H.div_ [ HP.class_ "abar" ] $
   [ H.div_ [ HP.class_ "tray" ]
       ( [ preset "MIN" (lMinTo lg)
@@ -548,7 +548,7 @@ parseAmt s = case reads (fromMisoString s) of
   [(n, "")] -> n
   _ -> 0
 -----------------------------------------------------------------------------
-bannerView :: Model -> View () Model Action
+bannerView :: Model -> View () () Model Action
 bannerView m = H.div_ [ HP.class_ "banner", key_ ("b" <> ms (m ^. handNo)) ]
   [ H.div_ [ HP.class_ "bpanel" ]
       ( [ H.div_ [ HP.class_ "bline" ]
@@ -586,7 +586,7 @@ mucked m = not (m ^. showHands) && or
   | (j, p) <- zip [0 ..] (m ^. players), j /= heroSeat
   ]
 -----------------------------------------------------------------------------
-gameOverView :: Model -> Bool -> View () Model Action
+gameOverView :: Model -> Bool -> View () () Model Action
 gameOverView m won = H.div_ [ HP.class_ "overlay" ]
   [ H.div_ [ HP.class_ "panel goPanel" ]
       [ H.div_ [ HP.class_ "goEmoji" ] [ text (if won then "🏆" else "💔") ]
@@ -608,14 +608,14 @@ gameOverView m won = H.div_ [ HP.class_ "overlay" ]
       ]
   ]
   where
-    statRow :: Int -> MisoString -> MisoString -> View () Model Action
+    statRow :: Int -> MisoString -> MisoString -> View () () Model Action
     statRow k label v = H.div_
       [ HP.class_ "statRow"
       , CSS.style_ [ CSS.animationDelay (ms (200 + k * 130) <> "ms") ]
       ]
       [ H.span_ [] [ text label ], H.b_ [] [ text v ] ]
 -----------------------------------------------------------------------------
-helpOverlay :: View () Model Action
+helpOverlay :: View () () Model Action
 helpOverlay = H.div_ [ HP.class_ "overlay help" ]
   [ H.div_ [ HP.class_ "panel helpPanel" ]
       [ H.button_ [ HP.class_ "helpClose", HE.onClick CloseHelp ] [ text "✕" ]
