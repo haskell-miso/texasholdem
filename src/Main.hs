@@ -98,6 +98,7 @@ updateModel = \case
   ShowHands -> do
     m <- get
     when (m ^. phase == HandOver && not (m ^. showHands)) $ do
+      put (peekRunout m)   -- show the streets the hand never reached
       showHands .= True
       animSeq += 1
       playFx "flip"
@@ -357,9 +358,11 @@ boardView m = H.div_ [ HP.class_ "boardRow" ]
   where
     lits = litCards m
     dulls = not (null lits)
+    real = boardCount (m ^. street) -- the rest is the SHOW HANDS runout
     slot k = case drop k (m ^. board) of
       (card : _) -> cardFace
         (joinCls [ "bcard"
+                 , clsWhen (k >= real) "ghost"
                  , clsWhen (card `elem` lits) "lit"
                  , clsWhen (dulls && card `notElem` lits) "dull"
                  ])
@@ -640,7 +643,9 @@ helpOverlay = H.div_ [ HP.class_ "overlay help" ]
           "Last player standing takes the pot uncontested. Otherwise "
           <> "hands go face up and the best five-card hand wins — the "
           <> "winning cards light up so you can see why. SHOW HANDS on the "
-          <> "winner's banner turns over whatever stayed hidden."
+          <> "winner's banner turns over whatever stayed hidden and deals "
+          <> "the board out to the river, so you can see how it would "
+          <> "have gone."
       , sec "HAND RANKS, LOW TO HIGH"
       , para $
           "high card · pair · two pair · trips · straight · flush · "

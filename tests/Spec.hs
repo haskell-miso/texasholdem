@@ -209,6 +209,24 @@ main = do
         (_pStack (seatAt m' 2) == 600)
     [] -> check "found a clean side-pot board within 80 seeds" False
 
+  putStrLn "-- show-hands runout ----------------------------------------"
+  let peeked = peekRunout fold5
+  check "the folded-out hand stopped short of the flop"
+    (_board fold5 == [] && boardCount (_street fold5) == 0)
+  check "peeking deals the board out to five"
+    (length (_board peeked) == 5)
+  check "the peeked board uses cards nobody was dealt"
+    (length (nub (_board peeked ++ concatMap _pHole (_players peeked))) == 17)
+  check "peeking leaves the street where the hand ended"
+    (_street peeked == Preflop)
+  check "peeking moves no chips and awards nothing new"
+    (map _pStack (_players peeked) == map _pStack (_players fold5)
+      && _awards peeked == _awards fold5
+      && _phase peeked == HandOver
+      && chipsTotal peeked == seats * startingStack)
+  check "peeking a finished board is a no-op"
+    (_board (peekRunout allin3) == _board allin3)
+
   putStrLn "-- heads-up -------------------------------------------------"
   let duo = initialModel
         { _players = [ ph, pv, o2, o3, o4, o5 ], _button = 0, _phase = Playing }

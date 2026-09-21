@@ -245,6 +245,13 @@ skin = sheet_
       , CSS.zIndex 5
       ]
   , selector_ ".card.dull" [ CSS.filter "grayscale(.5) brightness(.55)" ]
+  -- board cards the hand never reached, dealt by SHOW HANDS: dashed
+  -- like an empty slot, so they never read as cards that were played
+  , selector_ ".card.ghost"
+      [ CSS.opacity 0.72
+      , CSS.outline "1.5px dashed rgba(232,199,125,.55)"
+      , "outline-offset" =: "2px"
+      ]
   , selector_ ".card.foldedCard" [ CSS.filter "grayscale(.7) brightness(.6)" ]
   , selector_ ".pot"
       [ CSS.position "absolute"

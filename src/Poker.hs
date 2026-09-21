@@ -232,6 +232,22 @@ runout :: Model -> Model
 runout m0 = foldl (flip dealBoard) (clearBets m0)
   [ st | st <- [Flop, Turn, River], st > _street m0 ]
 -----------------------------------------------------------------------------
+-- | Board cards a street has face up.
+boardCount :: Street -> Int
+boardCount = \case
+  Preflop -> 0; Flop -> 3; Turn -> 4; River -> 5
+-----------------------------------------------------------------------------
+-- | Fill the board to five from the rest of the deck, leaving the
+-- street, the chips and the awards alone: the "what would have come"
+-- peek on a hand nobody contested to the river.
+peekRunout :: Model -> Model
+peekRunout m = m
+  { _board = _board m ++ take n (_deck m)
+  , _deck = drop n (_deck m)
+  }
+  where
+    n = 5 - length (_board m)
+-----------------------------------------------------------------------------
 -- * Awarding
 -----------------------------------------------------------------------------
 -- | Everyone folded to one player: no showdown, cards stay hidden.
