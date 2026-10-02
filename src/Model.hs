@@ -1,14 +1,12 @@
 -----------------------------------------------------------------------------
-{-# LANGUAGE TemplateHaskell #-}
------------------------------------------------------------------------------
--- | Core types for miso-texasholdem, with lenses via "Miso.Lens.TH".
+-- | Core types for miso-texasholdem, with their lenses.
 -----------------------------------------------------------------------------
 module Model where
 -----------------------------------------------------------------------------
 import           Data.IntSet (IntSet)
 import qualified Data.IntSet as IS
 -----------------------------------------------------------------------------
-import           Miso.Lens.TH (makeLenses)
+import           Miso.Lens (Lens, lens)
 import           Miso.String (MisoString)
 -----------------------------------------------------------------------------
 import           Cards
@@ -47,7 +45,47 @@ data Player = Player
   , _pWon :: Int               -- ^ chips won in the hand just finished
   } deriving (Eq, Show)
 -----------------------------------------------------------------------------
-makeLenses ''Player
+pName :: Lens Player MisoString
+pName = lens _pName $ \r x -> r { _pName = x }
+
+pAvatar :: Lens Player MisoString
+pAvatar = lens _pAvatar $ \r x -> r { _pAvatar = x }
+
+pStyle :: Lens Player (Maybe Style)
+pStyle = lens _pStyle $ \r x -> r { _pStyle = x }
+
+pStack :: Lens Player Int
+pStack = lens _pStack $ \r x -> r { _pStack = x }
+
+pBet :: Lens Player Int
+pBet = lens _pBet $ \r x -> r { _pBet = x }
+
+pTotal :: Lens Player Int
+pTotal = lens _pTotal $ \r x -> r { _pTotal = x }
+
+pHole :: Lens Player [Card]
+pHole = lens _pHole $ \r x -> r { _pHole = x }
+
+pFolded :: Lens Player Bool
+pFolded = lens _pFolded $ \r x -> r { _pFolded = x }
+
+pAllIn :: Lens Player Bool
+pAllIn = lens _pAllIn $ \r x -> r { _pAllIn = x }
+
+pOut :: Lens Player Bool
+pOut = lens _pOut $ \r x -> r { _pOut = x }
+
+pActed :: Lens Player Bool
+pActed = lens _pActed $ \r x -> r { _pActed = x }
+
+pRevealed :: Lens Player Bool
+pRevealed = lens _pRevealed $ \r x -> r { _pRevealed = x }
+
+pLastAct :: Lens Player (Maybe MisoString)
+pLastAct = lens _pLastAct $ \r x -> r { _pLastAct = x }
+
+pWon :: Lens Player Int
+pWon = lens _pWon $ \r x -> r { _pWon = x }
 -----------------------------------------------------------------------------
 data Phase
   = Title
@@ -87,7 +125,65 @@ data Model = Model
   , _heldKeys :: IntSet
   } deriving (Eq, Show)
 -----------------------------------------------------------------------------
-makeLenses ''Model
+players :: Lens Model [Player]
+players = lens _players $ \r x -> r { _players = x }
+
+button :: Lens Model Int
+button = lens _button $ \r x -> r { _button = x }
+
+street :: Lens Model Street
+street = lens _street $ \r x -> r { _street = x }
+
+board :: Lens Model [Card]
+board = lens _board $ \r x -> r { _board = x }
+
+deck :: Lens Model [Card]
+deck = lens _deck $ \r x -> r { _deck = x }
+
+toAct :: Lens Model (Maybe Int)
+toAct = lens _toAct $ \r x -> r { _toAct = x }
+
+currentBet :: Lens Model Int
+currentBet = lens _currentBet $ \r x -> r { _currentBet = x }
+
+minRaise :: Lens Model Int
+minRaise = lens _minRaise $ \r x -> r { _minRaise = x }
+
+handNo :: Lens Model Int
+handNo = lens _handNo $ \r x -> r { _handNo = x }
+
+phase :: Lens Model Phase
+phase = lens _phase $ \r x -> r { _phase = x }
+
+awards :: Lens Model [Award]
+awards = lens _awards $ \r x -> r { _awards = x }
+
+raiseAmt :: Lens Model Int
+raiseAmt = lens _raiseAmt $ \r x -> r { _raiseAmt = x }
+
+raiseOpen :: Lens Model Bool
+raiseOpen = lens _raiseOpen $ \r x -> r { _raiseOpen = x }
+
+pacer :: Lens Model Int
+pacer = lens _pacer $ \r x -> r { _pacer = x }
+
+animSeq :: Lens Model Int
+animSeq = lens _animSeq $ \r x -> r { _animSeq = x }
+
+biggestPot :: Lens Model Int
+biggestPot = lens _biggestPot $ \r x -> r { _biggestPot = x }
+
+soundOn :: Lens Model Bool
+soundOn = lens _soundOn $ \r x -> r { _soundOn = x }
+
+showHands :: Lens Model Bool
+showHands = lens _showHands $ \r x -> r { _showHands = x }
+
+showHelp :: Lens Model Bool
+showHelp = lens _showHelp $ \r x -> r { _showHelp = x }
+
+heldKeys :: Lens Model IntSet
+heldKeys = lens _heldKeys $ \r x -> r { _heldKeys = x }
 -----------------------------------------------------------------------------
 data Action
   = NoOp
