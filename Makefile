@@ -2,6 +2,8 @@
 
 all: clean update build optim
 
+mhs: build-mhs
+
 update:
 	wasm32-wasi-cabal update
 
@@ -21,4 +23,10 @@ serve:
 	http-server public
 
 clean:
-	rm -rf dist-newstyle public
+	rm -rf dist-newstyle dist-mcabal public
+
+build-mhs:
+	mcabal --options=-tbrowser build
+	rm -rf public
+	cp -rv static public
+	cp -v ./dist-mcabal/bin/mhs/app public/index.js

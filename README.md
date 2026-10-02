@@ -51,6 +51,13 @@ nix develop .#wasm --command make
 make serve   # serves public/ on :8080
 ```
 
+## Build (MicroHs)
+
+```bash
+nix develop .#mhs --command make mhs
+make serve
+```
+
 ## Tests
 
 The engine is tested natively:

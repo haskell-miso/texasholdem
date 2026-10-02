@@ -32,7 +32,6 @@ executable app
                         LambdaCase
                         MultiWayIf
                         OverloadedStrings
-                        QuasiQuotes
                         RecordWildCards
                         TupleSections
                         ViewPatterns

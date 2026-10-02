@@ -10,7 +10,7 @@
 module Poker where
 -----------------------------------------------------------------------------
 import           Data.List (nub, sort)
-import           Data.Maybe (fromMaybe, listToMaybe)
+import           Data.Maybe (fromMaybe, isNothing, listToMaybe)
 -----------------------------------------------------------------------------
 import           Miso.String (MisoString, ms)
 -----------------------------------------------------------------------------
@@ -46,7 +46,7 @@ pending m i = nextWhere m owes i
 dealHand :: [Double] -> Model -> Model
 dealHand supply m0 =
   let m = postBlinds (m2 { _players = dealt })
-  in if null (_toAct m) then endStreet m else m
+  in if isNothing (_toAct m) then endStreet m else m
   where
     m1 = m0
       { _players = map resetP (_players m0)
